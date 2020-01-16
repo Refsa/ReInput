@@ -7,7 +7,6 @@ namespace OmegaInput
     [CreateAssetMenu (menuName = "Input/Omega Input Map")]
     public class OmegaInputMap : ScriptableObject
     {
-        [NaughtyAttributes.ReorderableList]
         [SerializeField] List<OmegaInput> inputMap;
 
         public List<OmegaInput> InputMap => inputMap;

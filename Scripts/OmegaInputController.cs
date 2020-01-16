@@ -10,7 +10,6 @@ namespace OmegaInput
         [SerializeField] OmegaInputMap characterInputMap;
         [SerializeField] OmegaInputMap debugInputMap;
 
-        [NaughtyAttributes.ReadOnly]
         [SerializeField] ControllerType activeControllerType;
 
         static OmegaInputMap _characterInputMap;
