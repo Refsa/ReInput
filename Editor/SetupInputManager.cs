@@ -1,10 +1,13 @@
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-public static class SetupInputManager
+namespace OmegaInput
 {
-    public static void Setup ()
+    public static class SetupInputManager
     {
-        
+        public static void Setup ( )
+        {
+
+        }
     }
 }

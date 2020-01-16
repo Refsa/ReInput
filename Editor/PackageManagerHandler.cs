@@ -3,43 +3,76 @@ using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
-[InitializeOnLoad]
-public static class OmegaInputPackageHandler
+namespace OmegaInput
 {
-    static SearchRequest searchRequest;
-    static Request packageRequest;
-    static ListRequest listRequest;
-
-    static string[ ] wantedPackages = new string[ ]
+    [InitializeOnLoad]
+    public static class OmegaInputPackageHandler
     {
-        "com.unity.inputsystem"
-    };
+        static SearchRequest searchRequest;
+        static Request packageRequest;
+        static ListRequest listRequest;
 
-    static int currentPackage = 0;
+        static PackRequest packRequest;
 
-    static OmegaInputPackageHandler ( )
-    {
-        currentPackage = 0;
-
-        listRequest = Client.List ( );
-
-        EditorApplication.update += FindPackages;
-    }
-
-    static void FindPackages ( )
-    {
-        if (listRequest.IsCompleted)
+        static string[ ] wantedPackages = new string[ ]
         {
-            if (listRequest.Status == StatusCode.Success)
-            {
-                foreach (var package in listRequest.Result) { }
-            }
-            else if (listRequest.Status == StatusCode.Failure)
-            {
-                Debug.Log (listRequest.Error.message);
-            }
+            "com.unity.inputsystem"
+        };
 
-            EditorApplication.update -= FindPackages;
+        static int currentPackage = 0;
+
+        static OmegaInputPackageHandler ( )
+        {
+            currentPackage = 0;
+
+            //listRequest = Client.List ( );
+            //EditorApplication.update += FindPackages;
+        }
+
+        static void FindPackages ( )
+        {
+            if (listRequest.IsCompleted)
+            {
+                if (listRequest.Status == StatusCode.Success)
+                {
+                    foreach (var package in listRequest.Result)
+                    {
+                        Debug.Log (package.name);
+                    }
+                }
+                else if (listRequest.Status == StatusCode.Failure)
+                {
+                    Debug.Log (listRequest.Error.message);
+                }
+
+                EditorApplication.update -= FindPackages;
+            }
+        }
+
+        [MenuItem ("OmegaInput/Create OmegaInput Package")]
+        static void CreatePackage ( )
+        {
+            packRequest = Client.Pack ("Assets/OmegaInput/", "Assets/Release/");
+
+            EditorApplication.update += WaitForPacking;
+        }
+
+        static void WaitForPacking ( )
+        {
+            if (packRequest.IsCompleted)
+            {
+                if (packRequest.Status == StatusCode.Failure)
+                {
+                    Debug.Log (packRequest.Error.message);
+                }
+                else if (packRequest.Status == StatusCode.Success)
+                {
+                    Debug.Log (packRequest.Result.tarballPath);
+                    AssetDatabase.Refresh ( );
+                }
+
+                EditorApplication.update -= WaitForPacking;
+            }
         }
     }
 }
