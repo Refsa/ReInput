@@ -12,6 +12,8 @@ namespace OmegaInput
         bool foldoutInputMap;
         bool wasAdded = false;
 
+        OmegaInput inputToRemove = null;
+
         Dictionary<OmegaInput, bool> foldoutInput;
 
         public override void OnInspectorGUI ( )
@@ -61,6 +63,12 @@ namespace OmegaInput
                 EditorGUILayout.EndVertical ( );
             }
 
+            if (inputToRemove != null)
+            {
+                targetas.InputMap.Remove (inputToRemove);
+                inputToRemove = null;
+            }
+
             wasAdded = false;
             serializedObject.ApplyModifiedProperties ( );
         }
@@ -70,12 +78,12 @@ namespace OmegaInput
             EditorGUILayout.BeginVertical (EditorStyles.helpBox);
             {
                 EditorGUI.indentLevel++;
-                
+
                 EditorGUILayout.BeginHorizontal ( );
                 {
                     if (GUILayout.Button ("X"))
                     {
-
+                        inputToRemove = omegaInput;
                     }
                     if (GUILayout.Button ("Duplicate"))
                     {
