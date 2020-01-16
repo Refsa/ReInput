@@ -10,6 +10,7 @@ namespace OmegaInput
     {
         Vector2 inputMapScrollPosition;
         bool foldoutInputMap;
+        bool wasAdded = false;
 
         Dictionary<OmegaInput, bool> foldoutInput;
 
@@ -33,13 +34,14 @@ namespace OmegaInput
                 if (GUILayout.Button ("Add"))
                 {
                     targetas.InputMap.Add (new OmegaInput ( ));
+                    wasAdded = true;
                 }
             }
             EditorGUILayout.EndHorizontal ( );
 
             foldoutInputMap = EditorGUILayout.Foldout (foldoutInputMap, "Input Map");
 
-            if (foldoutInputMap)
+            if (foldoutInputMap && !wasAdded)
             {
                 EditorGUILayout.BeginVertical (EditorStyles.helpBox);
                 {
@@ -49,7 +51,9 @@ namespace OmegaInput
                         {
                             foldoutInput[input] = EditorGUILayout.Foldout (foldoutInput[input], input.Name + " ->");
                             if (foldoutInput[input])
+                            {
                                 DrawOmegaInput (input);
+                            }
                         }
                     }
                     EditorGUILayout.EndScrollView ( );
@@ -57,6 +61,7 @@ namespace OmegaInput
                 EditorGUILayout.EndVertical ( );
             }
 
+            wasAdded = false;
             serializedObject.ApplyModifiedProperties ( );
         }
 
