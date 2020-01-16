@@ -57,6 +57,7 @@ namespace OmegaInput
                             if (foldoutInput[input])
                             {
                                 DrawOmegaInput (input);
+                                if (wasAdded) break;
                             }
                         }
                     }
@@ -95,7 +96,9 @@ namespace OmegaInput
                     }
                     if (GUILayout.Button ("Duplicate"))
                     {
-
+                        var copy = omegaInput.DeepCopy ( );
+                        ((OmegaInputMap) target).InputMap.Add (copy);
+                        wasAdded = true;
                     }
                 }
                 EditorGUILayout.EndHorizontal ( );

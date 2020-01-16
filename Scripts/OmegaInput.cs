@@ -441,5 +441,29 @@ namespace OmegaInput
 
             return true;
         }
+
+        public object ShallowCopy ( )
+        {
+            return this.MemberwiseClone ( );
+        }
+
+        public OmegaInput DeepCopy ( )
+        {
+            var copy = new OmegaInput ( );
+
+            copy.name = name + "_COPY";
+            copy.inputType = inputType;
+            copy.keyboardAxis = keyboardAxis;
+            copy.keyboardButton = keyboardButton;
+            copy.mouseAxis = mouseAxis;
+            copy.switchAxis = switchAxis;
+            copy.switchButton = switchButton;
+            copy.xboxAxis = xboxAxis;
+            copy.xboxButton = xboxButton;
+            copy.ps4Axis = ps4Axis;
+            copy.ps4Button = ps4Button;
+
+            return copy;
+        }
     }
 }
