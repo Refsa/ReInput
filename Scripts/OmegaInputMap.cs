@@ -16,7 +16,7 @@ namespace OmegaInput
             inputMap = new List<OmegaInput> ( );
         }
 
-        public OmegaInput FindButton (string name)
+        public OmegaInput FindInput (string name)
         {
             return inputMap.Find (bi => bi.Name == name);
         }

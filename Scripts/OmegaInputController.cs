@@ -46,7 +46,7 @@ namespace OmegaInput
                 currentGamepad = Gamepad.current.name;
             }
 
-            Debug.Log ("Current gamepad: " + currentGamepad);
+            //Debug.Log ("Current gamepad: " + currentGamepad);
 
             if (!LockDebugInput)
                 FetchInput (debugInputMap, currentGamepad);
