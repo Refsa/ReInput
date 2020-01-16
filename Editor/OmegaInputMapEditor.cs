@@ -18,7 +18,11 @@ namespace OmegaInput
 
         public override void OnInspectorGUI ( )
         {
+            serializedObject.Update ( );
+
             var targetas = (OmegaInputMap) target;
+
+            EditorGUI.BeginChangeCheck ( );
 
             if (foldoutInput == null) foldoutInput = new Dictionary<OmegaInput, bool> ( );
             foreach (var input in targetas.InputMap)
@@ -28,8 +32,6 @@ namespace OmegaInput
                     foldoutInput.Add (input, true);
                 }
             }
-
-            serializedObject.Update ( );
 
             EditorGUILayout.BeginHorizontal ( );
             {
@@ -68,9 +70,15 @@ namespace OmegaInput
                 targetas.InputMap.Remove (inputToRemove);
                 inputToRemove = null;
             }
-
             wasAdded = false;
+
             serializedObject.ApplyModifiedProperties ( );
+
+            if (EditorGUI.EndChangeCheck ( ))
+            {
+                EditorUtility.SetDirty (target);
+                AssetDatabase.SaveAssets ( );
+            }
         }
 
         void DrawOmegaInput (OmegaInput omegaInput)
