@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 
 namespace Refsa.OmegaInput
 {
-    public abstract class OmegaInputController : MonoBehaviour
+    [DefaultExecutionOrder(-1000)]
+    public class OmegaInputController : MonoBehaviour
     {
         static OmegaInputController instance;
 
@@ -15,10 +16,14 @@ namespace Refsa.OmegaInput
         static ControllerType _activeControllerType;
         public static ControllerType ActiveControllerType => _activeControllerType;
 
-        void Awake ( )
+        public void Setup ( )
         {
             if (instance == null) instance = this;
-            else Destroy (this);
+            else 
+            {
+                Destroy (this);
+                return;
+            }
 
             inputMaps = new List<OmegaInputMap>();
         }
@@ -35,7 +40,7 @@ namespace Refsa.OmegaInput
         {
             string currentGamepad = "KeyboardAndMouse";
 
-            if (Gamepad.current.IsActuated ( ))
+            if (Gamepad.current != null && Gamepad.current.IsActuated ( ))
             {
                 currentGamepad = Gamepad.current.name;
             }
@@ -71,6 +76,11 @@ namespace Refsa.OmegaInput
 
                 _activeControllerType = input.ActiveControllerType;
             }
+        }
+
+        public static void AddInputMap(OmegaInputMap inputMap)
+        {
+            instance.inputMaps.Add(inputMap);
         }
     }
 }

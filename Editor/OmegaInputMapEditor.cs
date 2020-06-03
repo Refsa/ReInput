@@ -5,7 +5,7 @@ using Refsa.OmegaInput;
 
 namespace Refsa.OmegaInput.Editor
 {
-    [CustomEditor (typeof (OmegaInputMap))]
+    [CustomEditor(typeof(OmegaInputMap))]
     public class OmegaInputMapEditor : UnityEditor.Editor
     {
         Vector2 inputMapScrollPosition;
@@ -13,137 +13,162 @@ namespace Refsa.OmegaInput.Editor
         bool wasAdded = false;
 
         OmegaInput inputToRemove = null;
-
         Dictionary<OmegaInput, bool> foldoutInput;
+        GUIStyle foldoutStyle;
 
-        public override void OnInspectorGUI ( )
+        public override void OnInspectorGUI()
         {
-            serializedObject.Update ( );
+            serializedObject.Update();
 
-            var targetas = (OmegaInputMap) target;
+            var targetas = (OmegaInputMap)target;
 
-            EditorGUI.BeginChangeCheck ( );
+            if (foldoutStyle == null)
+            {
+                foldoutStyle = new GUIStyle(EditorStyles.foldout);
+                foldoutStyle.normal.textColor = Color.blue;
+            }
 
-            if (foldoutInput == null) foldoutInput = new Dictionary<OmegaInput, bool> ( );
+            if (foldoutInput == null) foldoutInput = new Dictionary<OmegaInput, bool>();
             foreach (var input in targetas.InputMap)
             {
-                if (!foldoutInput.ContainsKey (input))
+                if (!foldoutInput.ContainsKey(input))
                 {
-                    foldoutInput.Add (input, true);
+                    foldoutInput.Add(input, false);
                 }
             }
 
-            EditorGUILayout.BeginHorizontal ( );
+            EditorGUI.BeginChangeCheck();
+
+            EditorGUILayout.BeginHorizontal();
             {
-                if (GUILayout.Button ("Add"))
+                if (GUILayout.Button("Add"))
                 {
-                    targetas.InputMap.Add (new OmegaInput ( ));
+                    targetas.InputMap.Add(new OmegaInput());
                     wasAdded = true;
                 }
             }
-            EditorGUILayout.EndHorizontal ( );
+            EditorGUILayout.EndHorizontal();
 
-            foldoutInputMap = EditorGUILayout.Foldout (foldoutInputMap, "Input Map");
+            foldoutInputMap = EditorGUILayout.Foldout(foldoutInputMap, "Input Map");
 
             if (foldoutInputMap && !wasAdded)
             {
-                EditorGUILayout.BeginVertical (EditorStyles.helpBox);
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 {
-                    inputMapScrollPosition = EditorGUILayout.BeginScrollView (inputMapScrollPosition);
+                    inputMapScrollPosition = EditorGUILayout.BeginScrollView(inputMapScrollPosition);
                     {
+                        int i = 0;
                         foreach (var input in targetas.InputMap)
                         {
-                            foldoutInput[input] = EditorGUILayout.Foldout (foldoutInput[input], input.Name + " ->");
+                            DrawInputFoldout(input);
+
+                            if (wasAdded) break;
+
                             if (foldoutInput[input])
                             {
-                                DrawOmegaInput (input);
-                                if (wasAdded) break;
+                                DrawOmegaInput(input);
                             }
+
+                            GUILayout.Space(3f);
+                            i++;
                         }
                     }
-                    EditorGUILayout.EndScrollView ( );
+                    EditorGUILayout.EndScrollView();
                 }
-                EditorGUILayout.EndVertical ( );
+                EditorGUILayout.EndVertical();
             }
 
             if (inputToRemove != null)
             {
-                targetas.InputMap.Remove (inputToRemove);
+                targetas.InputMap.Remove(inputToRemove);
                 inputToRemove = null;
             }
             wasAdded = false;
 
-            serializedObject.ApplyModifiedProperties ( );
+            serializedObject.ApplyModifiedProperties();
 
-            if (EditorGUI.EndChangeCheck ( ))
+            if (EditorGUI.EndChangeCheck())
             {
-                EditorUtility.SetDirty (target);
-                AssetDatabase.SaveAssets ( );
+                EditorUtility.SetDirty(target);
+                AssetDatabase.SaveAssets();
             }
         }
 
-        void DrawOmegaInput (OmegaInput omegaInput)
+        void DrawInputFoldout(OmegaInput input)
         {
-            EditorGUILayout.BeginVertical (EditorStyles.helpBox);
+            string foldoutName = input.Name + (foldoutInput[input] ? " ↓" : " →");
+            using (new GUILayout.HorizontalScope())
+            {
+                foldoutInput[input] = EditorGUILayout.Foldout(foldoutInput[input], foldoutName, foldoutStyle);
+
+                if (GUILayout.Button("X", EditorStyles.miniButtonLeft))
+                {
+                    inputToRemove = input;
+                }
+                if (GUILayout.Button("C", EditorStyles.miniButtonMid))
+                {
+                    var copy = input.DeepCopy();
+                    ((OmegaInputMap)target).InputMap.Add(copy);
+                    wasAdded = true;
+                }
+                if (GUILayout.Button("↓", EditorStyles.miniButtonMid))
+                {
+
+                }
+                if (GUILayout.Button("↑", EditorStyles.miniButtonRight))
+                {
+
+                }
+            }
+        }
+
+        void DrawOmegaInput(OmegaInput omegaInput)
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             {
                 EditorGUI.indentLevel++;
 
-                EditorGUILayout.BeginHorizontal ( );
-                {
-                    if (GUILayout.Button ("X"))
-                    {
-                        inputToRemove = omegaInput;
-                    }
-                    if (GUILayout.Button ("Duplicate"))
-                    {
-                        var copy = omegaInput.DeepCopy ( );
-                        ((OmegaInputMap) target).InputMap.Add (copy);
-                        wasAdded = true;
-                    }
-                }
-                EditorGUILayout.EndHorizontal ( );
+                omegaInput.Name = EditorGUILayout.TextField("Name", omegaInput.Name);
+                omegaInput.InputType = (InputType)EditorGUILayout.EnumPopup("Input Type", omegaInput.InputType);
 
-                omegaInput.Name = EditorGUILayout.TextField ("Name", omegaInput.Name);
-                omegaInput.InputType = (InputType) EditorGUILayout.EnumPopup ("Input Type", omegaInput.InputType);
+                EditorGUILayout.Space();
 
-                EditorGUILayout.Space ( );
-
-                EditorGUILayout.LabelField ("Keyboard", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("Keyboard", EditorStyles.boldLabel);
                 if (omegaInput.InputType == InputType.Button || omegaInput.InputType == InputType.Both)
-                    omegaInput.KeyboardButton = (KeyCode) EditorGUILayout.EnumPopup ("Keyboard Button", omegaInput.KeyboardButton);
+                    omegaInput.KeyboardButton = (KeyCode)EditorGUILayout.EnumPopup("Keyboard Button", omegaInput.KeyboardButton);
                 if (omegaInput.InputType == InputType.Axis || omegaInput.InputType == InputType.Both)
                 {
-                    omegaInput.KeyboardAxis = (KeyboardAxis) EditorGUILayout.EnumPopup ("Keyboard Axis", omegaInput.KeyboardAxis);
-                    omegaInput.MouseAxis = (MouseAxis) EditorGUILayout.EnumPopup ("Mouse Axis", omegaInput.MouseAxis);
+                    omegaInput.KeyboardAxis = (KeyboardAxis)EditorGUILayout.EnumPopup("Keyboard Axis", omegaInput.KeyboardAxis);
+                    omegaInput.MouseAxis = (MouseAxis)EditorGUILayout.EnumPopup("Mouse Axis", omegaInput.MouseAxis);
                 }
 
-                EditorGUILayout.Space ( );
+                EditorGUILayout.Space();
 
-                EditorGUILayout.LabelField ("Switch", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("Switch", EditorStyles.boldLabel);
                 if (omegaInput.InputType == InputType.Button || omegaInput.InputType == InputType.Both)
-                    omegaInput.SwitchButton = (SwitchButton) EditorGUILayout.EnumPopup ("Switch Button", omegaInput.SwitchButton);
+                    omegaInput.SwitchButton = (SwitchButton)EditorGUILayout.EnumPopup("Switch Button", omegaInput.SwitchButton);
                 if (omegaInput.InputType == InputType.Axis || omegaInput.InputType == InputType.Both)
-                    omegaInput.SwitchAxis = (SwitchAxis) EditorGUILayout.EnumPopup ("Switch Axis", omegaInput.SwitchAxis);
+                    omegaInput.SwitchAxis = (SwitchAxis)EditorGUILayout.EnumPopup("Switch Axis", omegaInput.SwitchAxis);
 
-                EditorGUILayout.Space ( );
+                EditorGUILayout.Space();
 
-                EditorGUILayout.LabelField ("Xbox", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("Xbox", EditorStyles.boldLabel);
                 if (omegaInput.InputType == InputType.Button || omegaInput.InputType == InputType.Both)
-                    omegaInput.XboxButton = (XboxButton) EditorGUILayout.EnumPopup ("Xbox Button", omegaInput.XboxButton);
+                    omegaInput.XboxButton = (XboxButton)EditorGUILayout.EnumPopup("Xbox Button", omegaInput.XboxButton);
                 if (omegaInput.InputType == InputType.Axis || omegaInput.InputType == InputType.Both)
-                    omegaInput.XboxAxis = (XboxAxis) EditorGUILayout.EnumPopup ("Xbox Axis", omegaInput.XboxAxis);
+                    omegaInput.XboxAxis = (XboxAxis)EditorGUILayout.EnumPopup("Xbox Axis", omegaInput.XboxAxis);
 
-                EditorGUILayout.Space ( );
+                EditorGUILayout.Space();
 
-                EditorGUILayout.LabelField ("PS4", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("PS4", EditorStyles.boldLabel);
                 if (omegaInput.InputType == InputType.Button || omegaInput.InputType == InputType.Both)
-                    omegaInput.Ps4Button = (PS4Button) EditorGUILayout.EnumPopup ("PS4 Button", omegaInput.Ps4Button);
+                    omegaInput.Ps4Button = (PS4Button)EditorGUILayout.EnumPopup("PS4 Button", omegaInput.Ps4Button);
                 if (omegaInput.InputType == InputType.Axis || omegaInput.InputType == InputType.Both)
-                    omegaInput.Ps4Axis = (PS4Axis) EditorGUILayout.EnumPopup ("PS4 Axis", omegaInput.Ps4Axis);
+                    omegaInput.Ps4Axis = (PS4Axis)EditorGUILayout.EnumPopup("PS4 Axis", omegaInput.Ps4Axis);
 
                 EditorGUI.indentLevel--;
             }
-            EditorGUILayout.EndVertical ( );
+            EditorGUILayout.EndVertical();
         }
     }
 }
