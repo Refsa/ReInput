@@ -15,12 +15,13 @@ namespace Refsa.OmegaInput.Editor
         OmegaInput inputToRemove = null;
         Dictionary<OmegaInput, bool> foldoutInput;
         GUIStyle foldoutStyle;
+        OmegaInputMap targetAs;
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
-            var targetas = (OmegaInputMap)target;
+            targetAs = (OmegaInputMap)target;
 
             if (foldoutStyle == null)
             {
@@ -29,7 +30,7 @@ namespace Refsa.OmegaInput.Editor
             }
 
             if (foldoutInput == null) foldoutInput = new Dictionary<OmegaInput, bool>();
-            foreach (var input in targetas.InputMap)
+            foreach (var input in targetAs.InputMap)
             {
                 if (!foldoutInput.ContainsKey(input))
                 {
@@ -43,7 +44,7 @@ namespace Refsa.OmegaInput.Editor
             {
                 if (GUILayout.Button("Add"))
                 {
-                    targetas.InputMap.Add(new OmegaInput());
+                    targetAs.InputMap.Add(new OmegaInput());
                     wasAdded = true;
                 }
             }
@@ -58,7 +59,7 @@ namespace Refsa.OmegaInput.Editor
                     inputMapScrollPosition = EditorGUILayout.BeginScrollView(inputMapScrollPosition);
                     {
                         int i = 0;
-                        foreach (var input in targetas.InputMap)
+                        foreach (var input in targetAs.InputMap)
                         {
                             DrawInputFoldout(input);
 
@@ -80,7 +81,7 @@ namespace Refsa.OmegaInput.Editor
 
             if (inputToRemove != null)
             {
-                targetas.InputMap.Remove(inputToRemove);
+                targetAs.InputMap.Remove(inputToRemove);
                 inputToRemove = null;
             }
             wasAdded = false;
@@ -111,13 +112,23 @@ namespace Refsa.OmegaInput.Editor
                     ((OmegaInputMap)target).InputMap.Add(copy);
                     wasAdded = true;
                 }
-                if (GUILayout.Button("↓", EditorStyles.miniButtonMid))
+                if (GUILayout.Button("▼", EditorStyles.miniButtonMid))
                 {
+                    int indexOf = targetAs.InputMap.IndexOf(input);
+                    if (indexOf == -1 || indexOf == targetAs.InputMap.Count - 1) return;
 
+                    targetAs.InputMap[indexOf] = targetAs.InputMap[indexOf + 1];
+                    targetAs.InputMap[indexOf + 1] = input;
+                    wasAdded = true;
                 }
-                if (GUILayout.Button("↑", EditorStyles.miniButtonRight))
+                if (GUILayout.Button("▲", EditorStyles.miniButtonRight))
                 {
+                    int indexOf = targetAs.InputMap.IndexOf(input);
+                    if (indexOf == -1 || indexOf == 0 || targetAs.InputMap.Count == 0) return;
 
+                    targetAs.InputMap[indexOf] = targetAs.InputMap[indexOf - 1];
+                    targetAs.InputMap[indexOf - 1] = input;
+                    wasAdded = true;
                 }
             }
         }
