@@ -42,7 +42,10 @@ namespace Refsa.OmegaInput
 
             if (Gamepad.current != null && Gamepad.current.IsActuated ( ))
             {
-                currentGamepad = Gamepad.current.name;
+                if (Gamepad.current.name != currentGamepad)
+                {
+                    currentGamepad = Gamepad.current.name;
+                }
             }
 
             for (int i = 0; i < inputMaps.Count; i++)
