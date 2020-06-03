@@ -3,7 +3,7 @@ using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
-namespace OmegaInput
+namespace Refsa.OmegaInput.Editor
 {
     [InitializeOnLoad]
     public static class OmegaInputPackageHandler

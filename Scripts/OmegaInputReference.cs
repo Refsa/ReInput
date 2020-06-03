@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace OmegaInput
+namespace Refsa.OmegaInput
 {
     public static class ControllerInputBind
     {

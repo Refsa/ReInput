@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using OmegaInput;
+using Refsa.OmegaInput;
 
-namespace OmegaInput
+namespace Refsa.OmegaInput.Editor
 {
     [CustomEditor (typeof (OmegaInputMap))]
-    public class OmegaInputMapEditor : Editor
+    public class OmegaInputMapEditor : UnityEditor.Editor
     {
         Vector2 inputMapScrollPosition;
         bool foldoutInputMap;

@@ -1,44 +1,38 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace OmegaInput
+namespace Refsa.OmegaInput
 {
-    public class OmegaInputController : MonoBehaviour
+    public abstract class OmegaInputController : MonoBehaviour
     {
         static OmegaInputController instance;
 
-        [SerializeField] OmegaInputMap characterInputMap;
-        [SerializeField] OmegaInputMap debugInputMap;
-
         [SerializeField] ControllerType activeControllerType;
 
-        static OmegaInputMap _characterInputMap;
-        public static OmegaInputMap CharacterInputMap => _characterInputMap;
-
-        static OmegaInputMap _debugInputMap;
-        public static OmegaInputMap DebugInputMap => _debugInputMap;
+        List<OmegaInputMap> inputMaps;
 
         static ControllerType _activeControllerType;
         public static ControllerType ActiveControllerType => _activeControllerType;
-
-        public static bool LockDebugInput;
-        public static bool LockCharacterInput;
 
         void Awake ( )
         {
             if (instance == null) instance = this;
             else Destroy (this);
 
-            _characterInputMap = characterInputMap;
-            _debugInputMap = debugInputMap;
+            inputMaps = new List<OmegaInputMap>();
+        }
 
-            InitInputMap (characterInputMap);
-            InitInputMap (debugInputMap);
+        void Start()
+        {
+            for (int i = 0; i < inputMaps.Count; i++)
+            {
+                InitInputMap(inputMaps[i]);
+            }
         }
 
         void Update ( )
         {
-            //string currentGamepad = Gamepad.current != null ? Gamepad.current.name : "KeyboardAndMouse";
             string currentGamepad = "KeyboardAndMouse";
 
             if (Gamepad.current.IsActuated ( ))
@@ -46,12 +40,8 @@ namespace OmegaInput
                 currentGamepad = Gamepad.current.name;
             }
 
-            //Debug.Log ("Current gamepad: " + currentGamepad);
-
-            if (!LockDebugInput)
-                FetchInput (debugInputMap, currentGamepad);
-            if (!LockCharacterInput)
-                FetchInput (characterInputMap, currentGamepad);
+            for (int i = 0; i < inputMaps.Count; i++)
+                FetchInput (inputMaps[i], currentGamepad);
 
             activeControllerType = _activeControllerType;
         }
@@ -81,11 +71,6 @@ namespace OmegaInput
 
                 _activeControllerType = input.ActiveControllerType;
             }
-        }
-
-        public static OmegaInput FindInputButton (string name)
-        {
-            return _characterInputMap.InputMap.Find (bi => bi.Name == name);
         }
     }
 }

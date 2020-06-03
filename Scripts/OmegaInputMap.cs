@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace OmegaInput
+namespace Refsa.OmegaInput
 {
     [CreateAssetMenu (menuName = "Input/Omega Input Map")]
     public class OmegaInputMap : ScriptableObject

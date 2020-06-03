@@ -1,6 +1,6 @@
 using System;
 
-namespace OmegaInput
+namespace Refsa.OmegaInput
 {
     public interface IOmegaButtonInput
     {

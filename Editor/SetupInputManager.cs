@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace OmegaInput
+namespace Refsa.OmegaInput.Editor
 {
     public static class SetupInputManager
     {

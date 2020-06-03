@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace OmegaInput
+namespace Refsa.OmegaInput
 {
     [System.Serializable]
     public class OmegaInput : IOmegaButtonInput, IOmegaInputAxis
