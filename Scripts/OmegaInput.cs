@@ -439,6 +439,8 @@ namespace Refsa.OmegaInput
                     break;
             }
 
+            if (string.IsNullOrEmpty(Name)) return false;
+
             return true;
         }
 

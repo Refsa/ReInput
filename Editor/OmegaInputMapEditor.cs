@@ -97,6 +97,9 @@ namespace Refsa.OmegaInput.Editor
 
         void DrawInputFoldout(OmegaInput input)
         {
+            if (!input.Validate()) foldoutStyle.normal.textColor = Color.red;
+            else foldoutStyle.normal.textColor = Color.blue;
+
             string foldoutName = input.Name + (foldoutInput[input] ? " ↓" : " →");
             using (new GUILayout.HorizontalScope())
             {
