@@ -34,7 +34,7 @@ namespace Refsa.OmegaInput.Editor
             {
                 if (!foldoutInput.ContainsKey(input))
                 {
-                    foldoutInput.Add(input, false);
+                    foldoutInput.Add(input, true);
                 }
             }
 
