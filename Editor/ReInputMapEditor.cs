@@ -28,19 +28,29 @@ namespace Refsa.ReInput.Editor
     public class ReInputMapEditor : UnityEditor.Editor
     {
         Vector2 inputMapScrollPosition;
-        [SerializeField] bool foldoutInputMap = true;
         bool wasAdded = false;
 
         ReInput inputToRemove = null;
-        Dictionary<ReInput, bool> foldoutInput;
         GUIStyle foldoutStyle;
         ReInputMap targetAs;
 
         EditorSettings.Settings settings;
 
-        void OnDestroy() 
+        void OnEnable() 
         {
-            EditorSettings.Save();    
+            AssemblyReloadEvents.afterAssemblyReload += ReloadSettings;
+        }
+
+        void OnDestroy()
+        {
+            EditorSettings.Save();
+            AssemblyReloadEvents.afterAssemblyReload -= ReloadSettings;
+        }
+
+        void ReloadSettings() 
+        {
+            targetAs = (ReInputMap)target;
+            settings = EditorSettings.GetSettings(targetAs);
         }
 
         public override void OnInspectorGUI()
@@ -55,13 +65,12 @@ namespace Refsa.ReInput.Editor
                 foldoutStyle = new GUIStyle(EditorStyles.foldout);
                 foldoutStyle.normal.textColor = Color.blue;
             }
-
-            if (foldoutInput == null) foldoutInput = new Dictionary<ReInput, bool>();
+ 
             foreach (var input in targetAs.InputMap)
             {
-                if (!foldoutInput.ContainsKey(input))
+                if (!settings.FoldoutToggles.ContainsKey(input))
                 {
-                    foldoutInput.Add(input, true);
+                    settings.FoldoutToggles.Add(input, true);
                 }
             }
 
@@ -92,7 +101,7 @@ namespace Refsa.ReInput.Editor
 
                             if (wasAdded) break;
 
-                            if (foldoutInput[input])
+                            if (settings.FoldoutToggles[input])
                             {
                                 DrawReInput(input);
                             }
@@ -127,10 +136,13 @@ namespace Refsa.ReInput.Editor
             if (!input.Validate()) foldoutStyle.normal.textColor = Color.red;
             else foldoutStyle.normal.textColor = Color.blue;
 
-            string foldoutName = input.Name + (foldoutInput[input] ? " ↓" : " →");
             using (new GUILayout.HorizontalScope())
             {
-                foldoutInput[input] = EditorGUILayout.Foldout(foldoutInput[input], foldoutName, foldoutStyle);
+                string foldoutName = $"{input.Name} {(settings.FoldoutToggles[input] ? " ↓" : " →")}";
+                if (GUILayout.Button(foldoutName))
+                {
+                    settings.FoldoutToggles[input] = !settings.FoldoutToggles[input];
+                }
 
                 if (GUILayout.Button(ContentHelpers.RemoveButtonLabel, EditorStyles.miniButtonLeft))
                 {
@@ -221,11 +233,62 @@ namespace Refsa.ReInput.Editor
         [System.Serializable]
         public class Settings
         {
-            [SerializeReference] public readonly ReInputMap TargetInputMap;
+            [SerializeReference] public ReInputMap TargetInputMap;
             public bool FoldoutInputMap;
             public Vector2 InputMapScrollPosition;
+            public Dictionary<ReInput, bool> FoldoutToggles;
 
-            public Settings(ReInputMap inputMap) { FoldoutInputMap = true; InputMapScrollPosition = Vector2.zero; TargetInputMap = inputMap;}
+            [System.Serializable]
+            public class SerializedToggle
+            {
+                public string Name;
+                public bool Toggled;
+            }
+            public List<SerializedToggle> serializedFoldoutToggles;
+
+            public Settings(ReInputMap inputMap)
+            {
+                FoldoutInputMap = true;
+                InputMapScrollPosition = Vector2.zero;
+                TargetInputMap = inputMap;
+
+                FoldoutToggles = new Dictionary<ReInput, bool>();
+                foreach (var input in inputMap.InputMap)
+                {
+                    FoldoutToggles.Add(input, true);
+                }
+            }
+
+            public void Serialize()
+            {
+                serializedFoldoutToggles = new List<SerializedToggle>();
+                foreach (var kvp in FoldoutToggles)
+                {
+                    serializedFoldoutToggles.Add(new SerializedToggle { Name = kvp.Key.Name, Toggled = kvp.Value });
+                }
+            }
+
+            public void Deserialize()
+            {
+                FoldoutToggles = new Dictionary<ReInput, bool>();
+
+                var inputs = TargetInputMap.InputMap;
+                if (inputs.Count != serializedFoldoutToggles.Count)
+                {
+                    foreach (var input in inputs)
+                    {
+                        FoldoutToggles.Add(input, true);
+                    }
+                }
+                else
+                {
+                    foreach (var toggle in serializedFoldoutToggles)
+                    {
+                        var reinput = TargetInputMap.FindInput(toggle.Name);
+                        FoldoutToggles.Add(reinput, toggle.Toggled);
+                    }
+                }
+            }
         }
 
         [System.Serializable]
@@ -241,7 +304,7 @@ namespace Refsa.ReInput.Editor
             public bool TryGetSettings(ReInputMap inputMap, out Settings settings)
             {
                 settings = Settings.Find(e => e.TargetInputMap == inputMap);
-                return settings != null;            
+                return settings != null;
             }
         }
 
@@ -266,6 +329,14 @@ namespace Refsa.ReInput.Editor
 
         public static void Save()
         {
+            if (storedSettings != null)
+            {
+                foreach (Settings s in storedSettings.Settings)
+                {
+                    s.Serialize();
+                }
+            }
+
             var asJson = JsonUtility.ToJson(storedSettings, true);
             UnityEngine.Debug.Assert(!string.IsNullOrEmpty(asJson), $"ReInput: StoredSettings was not resolved to JSON format");
             EditorPrefs.SetString(PrefsStorePath, asJson);
@@ -277,11 +348,18 @@ namespace Refsa.ReInput.Editor
             {
                 storedSettings = JsonUtility.FromJson<StoredSettings>(EditorPrefs.GetString(PrefsStorePath));
                 UnityEngine.Debug.Assert(storedSettings != null, $"ReInput: Stored settings were null");
-            } 
-            
-            if (storedSettings == null) 
+                if (storedSettings != null)
+                {
+                    foreach (var s in storedSettings.Settings)
+                    {
+                        s.Deserialize();
+                    }
+                }
+            }
+
+            if (storedSettings == null)
             {
-                storedSettings = new StoredSettings();    
+                storedSettings = new StoredSettings();
             }
         }
     }
