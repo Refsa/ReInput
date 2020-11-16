@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Refsa.ReInput
 {
-    [CreateAssetMenu (menuName = "Input/Re Input Map")]
+    [CreateAssetMenu (menuName = "ReInput Map")]
     public class ReInputMap : ScriptableObject
     {
         [SerializeField] List<ReInput> inputMap;

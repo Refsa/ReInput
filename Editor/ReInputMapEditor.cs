@@ -5,11 +5,30 @@ using Refsa.ReInput;
 
 namespace Refsa.ReInput.Editor
 {
+    static class ContentHelpers
+    {
+        public static GUIContent RemoveButtonLabel;
+        public static GUIContent CopyButtonLabel;
+        public static GUIContent MoveUpButtonLabel;
+        public static GUIContent MoveDownButtonLabel;
+        public static GUIContent AddButtonLabel;
+
+        static ContentHelpers()
+        {
+            RemoveButtonLabel = new GUIContent("X", "Remove Entry");
+            CopyButtonLabel = new GUIContent("C", "Duplicate Entry");
+            MoveDownButtonLabel = new GUIContent("▼", "Move Entry Down");
+            MoveUpButtonLabel = new GUIContent("▲", "Move Contet Up");
+
+            AddButtonLabel = new GUIContent("Add", "Add New Entry");
+        }
+    }
+
     [CustomEditor(typeof(ReInputMap))]
     public class ReInputMapEditor : UnityEditor.Editor
     {
         Vector2 inputMapScrollPosition;
-        bool foldoutInputMap;
+        [SerializeField] bool foldoutInputMap = true;
         bool wasAdded = false;
 
         ReInput inputToRemove = null;
@@ -17,11 +36,19 @@ namespace Refsa.ReInput.Editor
         GUIStyle foldoutStyle;
         ReInputMap targetAs;
 
+        EditorSettings.Settings settings;
+
+        void OnDestroy() 
+        {
+            EditorSettings.Save();    
+        }
+
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
-
             targetAs = (ReInputMap)target;
+            if (settings == null) settings = EditorSettings.GetSettings(targetAs);
+
+            serializedObject.Update();
 
             if (foldoutStyle == null)
             {
@@ -42,7 +69,7 @@ namespace Refsa.ReInput.Editor
 
             EditorGUILayout.BeginHorizontal();
             {
-                if (GUILayout.Button("Add"))
+                if (GUILayout.Button(ContentHelpers.AddButtonLabel))
                 {
                     targetAs.InputMap.Add(new ReInput());
                     wasAdded = true;
@@ -50,9 +77,9 @@ namespace Refsa.ReInput.Editor
             }
             EditorGUILayout.EndHorizontal();
 
-            foldoutInputMap = EditorGUILayout.Foldout(foldoutInputMap, "Input Map");
+            settings.FoldoutInputMap = EditorGUILayout.Foldout(settings.FoldoutInputMap, "Input Map");
 
-            if (foldoutInputMap && !wasAdded)
+            if (settings.FoldoutInputMap && !wasAdded)
             {
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 {
@@ -105,17 +132,17 @@ namespace Refsa.ReInput.Editor
             {
                 foldoutInput[input] = EditorGUILayout.Foldout(foldoutInput[input], foldoutName, foldoutStyle);
 
-                if (GUILayout.Button("X", EditorStyles.miniButtonLeft))
+                if (GUILayout.Button(ContentHelpers.RemoveButtonLabel, EditorStyles.miniButtonLeft))
                 {
                     inputToRemove = input;
                 }
-                if (GUILayout.Button("C", EditorStyles.miniButtonMid))
+                if (GUILayout.Button(ContentHelpers.CopyButtonLabel, EditorStyles.miniButtonMid))
                 {
                     var copy = input.DeepCopy();
                     ((ReInputMap)target).InputMap.Add(copy);
                     wasAdded = true;
                 }
-                if (GUILayout.Button("▼", EditorStyles.miniButtonMid))
+                if (GUILayout.Button(ContentHelpers.MoveDownButtonLabel, EditorStyles.miniButtonMid))
                 {
                     int indexOf = targetAs.InputMap.IndexOf(input);
                     if (indexOf == -1 || indexOf == targetAs.InputMap.Count - 1) return;
@@ -124,7 +151,7 @@ namespace Refsa.ReInput.Editor
                     targetAs.InputMap[indexOf + 1] = input;
                     wasAdded = true;
                 }
-                if (GUILayout.Button("▲", EditorStyles.miniButtonRight))
+                if (GUILayout.Button(ContentHelpers.MoveUpButtonLabel, EditorStyles.miniButtonRight))
                 {
                     int indexOf = targetAs.InputMap.IndexOf(input);
                     if (indexOf == -1 || indexOf == 0 || targetAs.InputMap.Count == 0) return;
@@ -183,6 +210,79 @@ namespace Refsa.ReInput.Editor
                 EditorGUI.indentLevel--;
             }
             EditorGUILayout.EndVertical();
+        }
+    }
+
+
+    static class EditorSettings
+    {
+        const string PrefsStorePath = "reinput_editor_settings";
+
+        [System.Serializable]
+        public class Settings
+        {
+            [SerializeReference] public readonly ReInputMap TargetInputMap;
+            public bool FoldoutInputMap;
+            public Vector2 InputMapScrollPosition;
+
+            public Settings(ReInputMap inputMap) { FoldoutInputMap = true; InputMapScrollPosition = Vector2.zero; TargetInputMap = inputMap;}
+        }
+
+        [System.Serializable]
+        class StoredSettings
+        {
+            public List<Settings> Settings = new List<Settings>();
+
+            public void AddSettings(Settings settings)
+            {
+                Settings.Add(settings);
+            }
+
+            public bool TryGetSettings(ReInputMap inputMap, out Settings settings)
+            {
+                settings = Settings.Find(e => e.TargetInputMap == inputMap);
+                return settings != null;            
+            }
+        }
+
+        static StoredSettings storedSettings;
+
+        public static Settings GetSettings(ReInputMap inputMap)
+        {
+            if (storedSettings == null)
+            {
+                Load();
+            }
+
+            if (storedSettings.TryGetSettings(inputMap, out var settings))
+            {
+                return settings;
+            }
+
+            settings = new Settings(inputMap);
+            storedSettings.AddSettings(settings);
+            return settings;
+        }
+
+        public static void Save()
+        {
+            var asJson = JsonUtility.ToJson(storedSettings, true);
+            UnityEngine.Debug.Assert(!string.IsNullOrEmpty(asJson), $"ReInput: StoredSettings was not resolved to JSON format");
+            EditorPrefs.SetString(PrefsStorePath, asJson);
+        }
+
+        static void Load()
+        {
+            if (EditorPrefs.HasKey(PrefsStorePath))
+            {
+                storedSettings = JsonUtility.FromJson<StoredSettings>(EditorPrefs.GetString(PrefsStorePath));
+                UnityEngine.Debug.Assert(storedSettings != null, $"ReInput: Stored settings were null");
+            } 
+            
+            if (storedSettings == null) 
+            {
+                storedSettings = new StoredSettings();    
+            }
         }
     }
 }
