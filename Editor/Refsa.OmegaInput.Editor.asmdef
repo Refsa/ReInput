@@ -1,5 +1,5 @@
 {
-    "name": "Refsa.OmegaInput.Editor",
+    "name": "Refsa.ReInput.Editor",
     "references": [
         "GUID:75469ad4d38634e559750d17036d5f7c",
         "GUID:d68b4d614f0f8cc4a91cf79bc12a5a88"

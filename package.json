@@ -1,11 +1,11 @@
 {
-	"name": "com.refsa.omegainput",
-	"displayName": "OmegaInput",
+	"name": "com.refsa.Reinput",
+	"displayName": "ReInput",
 	"version": "1.0.0-preview.1c",
 	"unity": "2019.3",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Refsa/OmegaInput.git",
+		"url": "https://github.com/Refsa/ReInput.git",
 		"revision": "85b4e4f"
 	},
   	"description": "An Input System that combines the old InputManager and the new InputSystem from Unity Tech. for compatability issues with Switch Pro Controller",

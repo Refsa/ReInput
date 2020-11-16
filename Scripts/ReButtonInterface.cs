@@ -1,15 +1,15 @@
 using System;
 
-namespace Refsa.OmegaInput
+namespace Refsa.ReInput
 {
-    public interface IOmegaButtonInput
+    public interface IReButtonInput
     {
         event Action onButtonDown;
         event Action onButtonUp;
         event Action<float> onButtonHeld;
     }
 
-    public interface IOmegaInputAxis
+    public interface IReInputAxis
     {
         event Action<float> onGetAxis;
     }

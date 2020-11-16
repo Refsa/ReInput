@@ -3,10 +3,10 @@ using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
-namespace Refsa.OmegaInput.Editor
+namespace Refsa.ReInput.Editor
 {
     [InitializeOnLoad]
-    public static class OmegaInputPackageHandler
+    public static class ReInputPackageHandler
     {
         static SearchRequest searchRequest;
         static Request packageRequest;
@@ -21,7 +21,7 @@ namespace Refsa.OmegaInput.Editor
 
         static int currentPackage = 0;
 
-        static OmegaInputPackageHandler ( )
+        static ReInputPackageHandler ( )
         {
             currentPackage = 0;
 
@@ -49,10 +49,10 @@ namespace Refsa.OmegaInput.Editor
             }
         }
 
-        [MenuItem ("OmegaInput/Create OmegaInput Package")]
+        [MenuItem ("ReInput/Create ReInput Package")]
         static void CreatePackage ( )
         {
-            packRequest = Client.Pack ("Assets/OmegaInput/", "Assets/Release/");
+            packRequest = Client.Pack ("Assets/ReInput/", "Assets/Release/");
 
             EditorApplication.update += WaitForPacking;
         }

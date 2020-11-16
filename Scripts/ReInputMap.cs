@@ -1,0 +1,32 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Refsa.ReInput
+{
+    [CreateAssetMenu (menuName = "Input/Re Input Map")]
+    public class ReInputMap : ScriptableObject
+    {
+        [SerializeField] List<ReInput> inputMap;
+
+        public List<ReInput> InputMap => inputMap;
+
+        public ReInputMap ( )
+        {
+            inputMap = new List<ReInput> ( );
+        }
+
+        public ReInput FindInput (string name)
+        {
+            return inputMap.Find (bi => bi.Name == name);
+        }
+
+        void OnValidate ( )
+        {
+            foreach (var input in inputMap)
+            {
+                input.Validate ( );
+            }
+        }
+    }
+}

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Refsa.OmegaInput
+namespace Refsa.ReInput
 {
     [System.Serializable]
-    public class OmegaInput : IOmegaButtonInput, IOmegaInputAxis
+    public class ReInput : IReButtonInput, IReInputAxis
     {
         [SerializeField] string name;
         [SerializeField] InputType inputType;
@@ -449,9 +449,9 @@ namespace Refsa.OmegaInput
             return this.MemberwiseClone ( );
         }
 
-        public OmegaInput DeepCopy ( )
+        public ReInput DeepCopy ( )
         {
-            var copy = new OmegaInput ( );
+            var copy = new ReInput ( );
 
             copy.name = name + "_COPY";
             copy.inputType = inputType;

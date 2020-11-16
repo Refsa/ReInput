@@ -1,27 +1,27 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Refsa.OmegaInput;
+using Refsa.ReInput;
 
-namespace Refsa.OmegaInput.Editor
+namespace Refsa.ReInput.Editor
 {
-    [CustomEditor(typeof(OmegaInputMap))]
-    public class OmegaInputMapEditor : UnityEditor.Editor
+    [CustomEditor(typeof(ReInputMap))]
+    public class ReInputMapEditor : UnityEditor.Editor
     {
         Vector2 inputMapScrollPosition;
         bool foldoutInputMap;
         bool wasAdded = false;
 
-        OmegaInput inputToRemove = null;
-        Dictionary<OmegaInput, bool> foldoutInput;
+        ReInput inputToRemove = null;
+        Dictionary<ReInput, bool> foldoutInput;
         GUIStyle foldoutStyle;
-        OmegaInputMap targetAs;
+        ReInputMap targetAs;
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
-            targetAs = (OmegaInputMap)target;
+            targetAs = (ReInputMap)target;
 
             if (foldoutStyle == null)
             {
@@ -29,7 +29,7 @@ namespace Refsa.OmegaInput.Editor
                 foldoutStyle.normal.textColor = Color.blue;
             }
 
-            if (foldoutInput == null) foldoutInput = new Dictionary<OmegaInput, bool>();
+            if (foldoutInput == null) foldoutInput = new Dictionary<ReInput, bool>();
             foreach (var input in targetAs.InputMap)
             {
                 if (!foldoutInput.ContainsKey(input))
@@ -44,7 +44,7 @@ namespace Refsa.OmegaInput.Editor
             {
                 if (GUILayout.Button("Add"))
                 {
-                    targetAs.InputMap.Add(new OmegaInput());
+                    targetAs.InputMap.Add(new ReInput());
                     wasAdded = true;
                 }
             }
@@ -67,7 +67,7 @@ namespace Refsa.OmegaInput.Editor
 
                             if (foldoutInput[input])
                             {
-                                DrawOmegaInput(input);
+                                DrawReInput(input);
                             }
 
                             GUILayout.Space(3f);
@@ -95,7 +95,7 @@ namespace Refsa.OmegaInput.Editor
             }
         }
 
-        void DrawInputFoldout(OmegaInput input)
+        void DrawInputFoldout(ReInput input)
         {
             if (!input.Validate()) foldoutStyle.normal.textColor = Color.red;
             else foldoutStyle.normal.textColor = Color.blue;
@@ -112,7 +112,7 @@ namespace Refsa.OmegaInput.Editor
                 if (GUILayout.Button("C", EditorStyles.miniButtonMid))
                 {
                     var copy = input.DeepCopy();
-                    ((OmegaInputMap)target).InputMap.Add(copy);
+                    ((ReInputMap)target).InputMap.Add(copy);
                     wasAdded = true;
                 }
                 if (GUILayout.Button("▼", EditorStyles.miniButtonMid))
@@ -136,49 +136,49 @@ namespace Refsa.OmegaInput.Editor
             }
         }
 
-        void DrawOmegaInput(OmegaInput omegaInput)
+        void DrawReInput(ReInput ReInput)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             {
                 EditorGUI.indentLevel++;
 
-                omegaInput.Name = EditorGUILayout.TextField("Name", omegaInput.Name);
-                omegaInput.InputType = (InputType)EditorGUILayout.EnumPopup("Input Type", omegaInput.InputType);
+                ReInput.Name = EditorGUILayout.TextField("Name", ReInput.Name);
+                ReInput.InputType = (InputType)EditorGUILayout.EnumPopup("Input Type", ReInput.InputType);
 
                 EditorGUILayout.Space();
 
                 EditorGUILayout.LabelField("Keyboard", EditorStyles.boldLabel);
-                if (omegaInput.InputType == InputType.Button || omegaInput.InputType == InputType.Both)
-                    omegaInput.KeyboardButton = (KeyCode)EditorGUILayout.EnumPopup("Keyboard Button", omegaInput.KeyboardButton);
-                if (omegaInput.InputType == InputType.Axis || omegaInput.InputType == InputType.Both)
+                if (ReInput.InputType == InputType.Button || ReInput.InputType == InputType.Both)
+                    ReInput.KeyboardButton = (KeyCode)EditorGUILayout.EnumPopup("Keyboard Button", ReInput.KeyboardButton);
+                if (ReInput.InputType == InputType.Axis || ReInput.InputType == InputType.Both)
                 {
-                    omegaInput.KeyboardAxis = (KeyboardAxis)EditorGUILayout.EnumPopup("Keyboard Axis", omegaInput.KeyboardAxis);
-                    omegaInput.MouseAxis = (MouseAxis)EditorGUILayout.EnumPopup("Mouse Axis", omegaInput.MouseAxis);
+                    ReInput.KeyboardAxis = (KeyboardAxis)EditorGUILayout.EnumPopup("Keyboard Axis", ReInput.KeyboardAxis);
+                    ReInput.MouseAxis = (MouseAxis)EditorGUILayout.EnumPopup("Mouse Axis", ReInput.MouseAxis);
                 }
 
                 EditorGUILayout.Space();
 
                 EditorGUILayout.LabelField("Switch", EditorStyles.boldLabel);
-                if (omegaInput.InputType == InputType.Button || omegaInput.InputType == InputType.Both)
-                    omegaInput.SwitchButton = (SwitchButton)EditorGUILayout.EnumPopup("Switch Button", omegaInput.SwitchButton);
-                if (omegaInput.InputType == InputType.Axis || omegaInput.InputType == InputType.Both)
-                    omegaInput.SwitchAxis = (SwitchAxis)EditorGUILayout.EnumPopup("Switch Axis", omegaInput.SwitchAxis);
+                if (ReInput.InputType == InputType.Button || ReInput.InputType == InputType.Both)
+                    ReInput.SwitchButton = (SwitchButton)EditorGUILayout.EnumPopup("Switch Button", ReInput.SwitchButton);
+                if (ReInput.InputType == InputType.Axis || ReInput.InputType == InputType.Both)
+                    ReInput.SwitchAxis = (SwitchAxis)EditorGUILayout.EnumPopup("Switch Axis", ReInput.SwitchAxis);
 
                 EditorGUILayout.Space();
 
                 EditorGUILayout.LabelField("Xbox", EditorStyles.boldLabel);
-                if (omegaInput.InputType == InputType.Button || omegaInput.InputType == InputType.Both)
-                    omegaInput.XboxButton = (XboxButton)EditorGUILayout.EnumPopup("Xbox Button", omegaInput.XboxButton);
-                if (omegaInput.InputType == InputType.Axis || omegaInput.InputType == InputType.Both)
-                    omegaInput.XboxAxis = (XboxAxis)EditorGUILayout.EnumPopup("Xbox Axis", omegaInput.XboxAxis);
+                if (ReInput.InputType == InputType.Button || ReInput.InputType == InputType.Both)
+                    ReInput.XboxButton = (XboxButton)EditorGUILayout.EnumPopup("Xbox Button", ReInput.XboxButton);
+                if (ReInput.InputType == InputType.Axis || ReInput.InputType == InputType.Both)
+                    ReInput.XboxAxis = (XboxAxis)EditorGUILayout.EnumPopup("Xbox Axis", ReInput.XboxAxis);
 
                 EditorGUILayout.Space();
 
                 EditorGUILayout.LabelField("PS4", EditorStyles.boldLabel);
-                if (omegaInput.InputType == InputType.Button || omegaInput.InputType == InputType.Both)
-                    omegaInput.Ps4Button = (PS4Button)EditorGUILayout.EnumPopup("PS4 Button", omegaInput.Ps4Button);
-                if (omegaInput.InputType == InputType.Axis || omegaInput.InputType == InputType.Both)
-                    omegaInput.Ps4Axis = (PS4Axis)EditorGUILayout.EnumPopup("PS4 Axis", omegaInput.Ps4Axis);
+                if (ReInput.InputType == InputType.Button || ReInput.InputType == InputType.Both)
+                    ReInput.Ps4Button = (PS4Button)EditorGUILayout.EnumPopup("PS4 Button", ReInput.Ps4Button);
+                if (ReInput.InputType == InputType.Axis || ReInput.InputType == InputType.Both)
+                    ReInput.Ps4Axis = (PS4Axis)EditorGUILayout.EnumPopup("PS4 Axis", ReInput.Ps4Axis);
 
                 EditorGUI.indentLevel--;
             }

@@ -2,16 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Refsa.OmegaInput
+namespace Refsa.ReInput
 {
     [DefaultExecutionOrder(-1000)]
-    public class OmegaInputController : MonoBehaviour
+    public class ReInputController : MonoBehaviour
     {
-        static OmegaInputController instance;
+        static ReInputController instance;
 
         [SerializeField] ControllerType activeControllerType;
 
-        List<OmegaInputMap> inputMaps;
+        List<ReInputMap> inputMaps;
 
         static ControllerType _activeControllerType;
         public static ControllerType ActiveControllerType => _activeControllerType;
@@ -25,7 +25,7 @@ namespace Refsa.OmegaInput
                 return;
             }
 
-            inputMaps = new List<OmegaInputMap>();
+            inputMaps = new List<ReInputMap>();
         }
 
         void Start()
@@ -54,7 +54,7 @@ namespace Refsa.OmegaInput
             activeControllerType = _activeControllerType;
         }
 
-        void InitInputMap (OmegaInputMap inputMap)
+        void InitInputMap (ReInputMap inputMap)
         {
             foreach (var input in inputMap.InputMap)
             {
@@ -62,7 +62,7 @@ namespace Refsa.OmegaInput
             }
         }
 
-        void FetchInput (OmegaInputMap inputMap, string deviceName)
+        void FetchInput (ReInputMap inputMap, string deviceName)
         {
             foreach (var input in inputMap.InputMap)
             {
@@ -81,7 +81,7 @@ namespace Refsa.OmegaInput
             }
         }
 
-        public static void AddInputMap(OmegaInputMap inputMap)
+        public static void AddInputMap(ReInputMap inputMap)
         {
             instance.inputMaps.Add(inputMap);
         }

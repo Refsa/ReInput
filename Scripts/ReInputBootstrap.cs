@@ -3,9 +3,9 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Refsa.OmegaInput
+namespace Refsa.ReInput
 {
-    public class OmegaInputBootstrap
+    public class ReInputBootstrap
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void OnSubsystemRegistrationHook()
@@ -16,14 +16,14 @@ namespace Refsa.OmegaInput
 
         private static void SetupRequiredComponents(Scene arg0, LoadSceneMode arg1)
         {
-            var exists = GameObject.FindObjectOfType<OmegaInputController>();
+            var exists = GameObject.FindObjectOfType<ReInputController>();
 
             if (exists == null)
             {
                 var inputGameObject = new GameObject();
-                inputGameObject.name = "OmegaInputManager";
+                inputGameObject.name = "ReInputManager";
 
-                exists = inputGameObject.AddComponent<OmegaInputController>();
+                exists = inputGameObject.AddComponent<ReInputController>();
             }
 
             exists.Setup();
