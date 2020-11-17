@@ -11,10 +11,12 @@ namespace Refsa.ReInput
 
         [SerializeField] ControllerType activeControllerType;
 
-        List<ReInputMap> inputMaps;
+        [SerializeField] List<ReInputMap> inputMaps;
 
         static ControllerType _activeControllerType;
         public static ControllerType ActiveControllerType => _activeControllerType;
+
+        string lastGamepadName;
 
         public void Setup ( )
         {
@@ -25,7 +27,7 @@ namespace Refsa.ReInput
                 return;
             }
 
-            inputMaps = new List<ReInputMap>();
+            // inputMaps = new List<ReInputMap>();
         }
 
         void Start()
@@ -38,28 +40,19 @@ namespace Refsa.ReInput
 
         void Update ( )
         {
-            string currentGamepad = "KeyboardAndMouse";
-
             if (Gamepad.current != null && Gamepad.current.IsActuated ( ))
             {
-                if (Gamepad.current.name != currentGamepad)
-                {
-                    currentGamepad = Gamepad.current.name;
-                }
+                lastGamepadName = Gamepad.current.name;
+            }
+            else if (Keyboard.current != null && Keyboard.current.IsActuated())
+            {
+                lastGamepadName = "KeyboardAndMouse";
             }
 
             for (int i = 0; i < inputMaps.Count; i++)
-                FetchInput (inputMaps[i], currentGamepad);
+                FetchInput (inputMaps[i], lastGamepadName);
 
             activeControllerType = _activeControllerType;
-        }
-
-        void InitInputMap (ReInputMap inputMap)
-        {
-            foreach (var input in inputMap.InputMap)
-            {
-                input.Init ( );
-            }
         }
 
         void FetchInput (ReInputMap inputMap, string deviceName)
@@ -81,9 +74,18 @@ namespace Refsa.ReInput
             }
         }
 
+        void InitInputMap (ReInputMap inputMap)
+        {
+            foreach (var input in inputMap.InputMap)
+            {
+                input.Init ( );
+            }
+        }
+
         public static void AddInputMap(ReInputMap inputMap)
         {
             instance.inputMaps.Add(inputMap);
+            instance.InitInputMap(inputMap);
         }
     }
 }

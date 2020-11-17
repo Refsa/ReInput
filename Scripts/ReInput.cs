@@ -372,7 +372,7 @@ namespace Refsa.ReInput
                     }
                     else
                     {
-                        if (Input.GetKeyDown (xboxButtonKeycode))
+                        if (Input.GetKey (xboxButtonKeycode))
                             wasHeld = true;
                     }
                 }
