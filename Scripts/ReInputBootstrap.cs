@@ -22,6 +22,7 @@ namespace Refsa.ReInput
             {
                 var inputGameObject = new GameObject();
                 inputGameObject.name = "ReInputManager";
+                GameObject.DontDestroyOnLoad(inputGameObject);
 
                 exists = inputGameObject.AddComponent<ReInputController>();
             }

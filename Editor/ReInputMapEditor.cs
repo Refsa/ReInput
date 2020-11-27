@@ -36,8 +36,9 @@ namespace Refsa.ReInput.Editor
 
         EditorSettings.Settings settings;
 
-        void OnEnable() 
+        void OnEnable()
         {
+            ReloadSettings();
             AssemblyReloadEvents.afterAssemblyReload += ReloadSettings;
         }
 
@@ -47,7 +48,7 @@ namespace Refsa.ReInput.Editor
             AssemblyReloadEvents.afterAssemblyReload -= ReloadSettings;
         }
 
-        void ReloadSettings() 
+        void ReloadSettings()
         {
             targetAs = (ReInputMap)target;
             settings = EditorSettings.GetSettings(targetAs);
@@ -65,9 +66,17 @@ namespace Refsa.ReInput.Editor
                 foldoutStyle = new GUIStyle(EditorStyles.foldout);
                 foldoutStyle.normal.textColor = Color.blue;
             }
- 
+
             foreach (var input in targetAs.InputMap)
             {
+                if (settings.FoldoutToggles == null)
+                {
+                    settings.FoldoutToggles = new Dictionary<ReInput, bool>();
+                    foreach (var i in settings.TargetInputMap.InputMap)
+                    {
+                        settings.FoldoutToggles.Add(i, true);
+                    }
+                }
                 if (!settings.FoldoutToggles.ContainsKey(input))
                 {
                     settings.FoldoutToggles.Add(input, true);
@@ -261,10 +270,13 @@ namespace Refsa.ReInput.Editor
 
             public void Serialize()
             {
-                serializedFoldoutToggles = new List<SerializedToggle>();
-                foreach (var kvp in FoldoutToggles)
+                if (FoldoutToggles != null)
                 {
-                    serializedFoldoutToggles.Add(new SerializedToggle { Name = kvp.Key.Name, Toggled = kvp.Value });
+                    serializedFoldoutToggles = new List<SerializedToggle>();
+                    foreach (var kvp in FoldoutToggles)
+                    {
+                        serializedFoldoutToggles.Add(new SerializedToggle { Name = kvp.Key.Name, Toggled = kvp.Value });
+                    }
                 }
             }
 

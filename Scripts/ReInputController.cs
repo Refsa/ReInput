@@ -11,12 +11,14 @@ namespace Refsa.ReInput
 
         [SerializeField] ControllerType activeControllerType;
 
-        [SerializeField] List<ReInputMap> inputMaps;
+        [SerializeField] List<ReInputMap> inputMaps = new List<ReInputMap>();
 
         static ControllerType _activeControllerType;
         public static ControllerType ActiveControllerType => _activeControllerType;
 
         string lastGamepadName;
+
+        static bool isSetup = false;
 
         public void Setup ( )
         {
@@ -27,11 +29,13 @@ namespace Refsa.ReInput
                 return;
             }
 
-            // inputMaps = new List<ReInputMap>();
+            isSetup = true;
         }
 
         void Start()
         {
+            if (!isSetup) Setup();
+
             for (int i = 0; i < inputMaps.Count; i++)
             {
                 InitInputMap(inputMaps[i]);
@@ -40,6 +44,8 @@ namespace Refsa.ReInput
 
         void Update ( )
         {
+            if (!isSetup) Setup();
+            
             if (Gamepad.current != null && Gamepad.current.IsActuated ( ))
             {
                 lastGamepadName = Gamepad.current.name;
@@ -57,6 +63,8 @@ namespace Refsa.ReInput
 
         void FetchInput (ReInputMap inputMap, string deviceName)
         {
+            if (!isSetup) Setup();
+
             foreach (var input in inputMap.InputMap)
             {
                 input.SetDevice (deviceName);
@@ -76,6 +84,8 @@ namespace Refsa.ReInput
 
         void InitInputMap (ReInputMap inputMap)
         {
+            if (!isSetup) Setup();
+
             foreach (var input in inputMap.InputMap)
             {
                 input.Init ( );
@@ -84,6 +94,8 @@ namespace Refsa.ReInput
 
         public static void AddInputMap(ReInputMap inputMap)
         {
+            if (!isSetup) return;
+            
             instance.inputMaps.Add(inputMap);
             instance.InitInputMap(inputMap);
         }
