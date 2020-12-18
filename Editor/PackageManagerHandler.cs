@@ -49,7 +49,9 @@ namespace Refsa.ReInput.Editor
             }
         }
 
-        [MenuItem ("ReInput/Create ReInput Package")]
+#if ReInputDev
+        [MenuItem ("Tools/ReInput/Create ReInput Package")]
+#endif
         static void CreatePackage ( )
         {
             packRequest = Client.Pack ("Assets/ReInput/", "Assets/Release/");

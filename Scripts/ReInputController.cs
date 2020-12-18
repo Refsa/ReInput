@@ -16,6 +16,9 @@ namespace Refsa.ReInput
         static ControllerType _activeControllerType;
         public static ControllerType ActiveControllerType => _activeControllerType;
 
+        static bool _inputActive = true;
+        public static bool InputActive { get => _inputActive; set => _inputActive = value; }
+
         string lastGamepadName;
 
         static bool isSetup = false;
@@ -40,12 +43,15 @@ namespace Refsa.ReInput
             {
                 InitInputMap(inputMaps[i]);
             }
+            InputActive = true;
         }
 
         void Update ( )
         {
             if (!isSetup) Setup();
-            
+
+            if (!InputActive) return;
+
             if (Gamepad.current != null && Gamepad.current.IsActuated ( ))
             {
                 lastGamepadName = Gamepad.current.name;
