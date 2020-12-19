@@ -86,7 +86,6 @@ namespace Refsa.ReInput.Editor
             var isPath = Application.dataPath.Replace("/Assets", "/ProjectSettings/InputManager.asset");
 
             File.Replace(settingsPath, isPath, "InputManager.asset.old");
-            File.Copy(isPath, settingsPath);
         }
         
         static string LocateFile(string path, string fileName)
