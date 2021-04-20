@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Refsa.ReInput
+namespace ReInput
 {
     [CreateAssetMenu (menuName = "ReInput Map")]
     public class ReInputMap : ScriptableObject

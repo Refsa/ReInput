@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Linq;
 using System.IO;
 
-namespace Refsa.ReInput.Editor
+namespace ReInput.Editor
 {
     [InitializeOnLoad]
     public static class ReInputPackageHandler

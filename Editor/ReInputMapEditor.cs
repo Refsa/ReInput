@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Refsa.ReInput;
+using ReInput;
 
-namespace Refsa.ReInput.Editor
+namespace ReInput.Editor
 {
     static class ContentHelpers
     {
@@ -285,7 +285,7 @@ namespace Refsa.ReInput.Editor
                 FoldoutToggles = new Dictionary<ReInput, bool>();
 
                 var inputs = TargetInputMap.InputMap;
-                if (inputs.Count != serializedFoldoutToggles.Count)
+                if (serializedFoldoutToggles == null || inputs.Count != serializedFoldoutToggles.Count)
                 {
                     foreach (var input in inputs)
                     {

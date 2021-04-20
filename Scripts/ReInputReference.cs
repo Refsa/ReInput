@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Refsa.ReInput
+namespace ReInput
 {
     public static class ControllerInputBind
     {

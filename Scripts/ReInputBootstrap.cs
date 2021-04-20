@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Refsa.ReInput
+namespace ReInput
 {
     public class ReInputBootstrap
     {
@@ -26,8 +26,6 @@ namespace Refsa.ReInput
 
                 exists = inputGameObject.AddComponent<ReInputController>();
             }
-
-            exists.Setup();
         }
     }
 }

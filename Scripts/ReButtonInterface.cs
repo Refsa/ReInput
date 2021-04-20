@@ -1,6 +1,6 @@
 using System;
 
-namespace Refsa.ReInput
+namespace ReInput
 {
     public interface IReButtonInput
     {
